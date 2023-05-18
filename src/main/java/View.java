@@ -6,10 +6,6 @@ import java.io.IOException;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
-
-/**
- * @author Denis
- */
 public class View extends JFrame {
     private final JPanel jp_contentPane;
     private JPanel jp_grid;
@@ -21,8 +17,7 @@ public class View extends JFrame {
     private Mesh mesh;
     private CarInserter carInserter;
 
-    public View(){
-
+    public View() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException |
@@ -37,23 +32,22 @@ public class View extends JFrame {
         setTitle("Carregue um nivel para iniciar");
         setLocation(0, 0);
         setDefaultLookAndFeelDecorated(true);
-        setSize(600, 600);
 
         loadComponents();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        pack();
         setVisible(true);
     }
 
     public static void main(String[] args) throws Exception {
-
         View view = new View();
         view.setInstance(new Instance("./assets/instances/malha-1.txt"));
         view.setTitle("Fase: " + "malha-1");
         view.setMesh(new Mesh(view.getInstance()));
         view.loadGrid();
         view.drawGrid();
-        while(true){
+        while (true) {
             Thread.sleep(50);
             view.drawGrid();
         }
@@ -64,7 +58,6 @@ public class View extends JFrame {
             jp_contentPane.remove(jp_grid);
         } catch (Exception ignore) {
         }
-        setSize(getInstance().getDepth()*25, (getInstance().getHeight()*25) + 75);
         jp_grid = new JPanel(new GridLayout(getInstance().getHeight(), getInstance().getDepth(), 0, 0));
         jp_grid.setBackground(Color.white);
         jp_contentPane.add(BorderLayout.CENTER, jp_grid);
@@ -118,21 +111,28 @@ public class View extends JFrame {
         });
     }
 
-    public void drawGrid(){
+    public void drawGrid() {
         try {
             jp_grid.removeAll();
+            int gridWidth = jp_grid.getWidth();
+            int gridHeight = jp_grid.getHeight();
+            int tileWidth = gridWidth / getInstance().getDepth();
+            int tileHeight = gridHeight / getInstance().getHeight();
+
             for (int i = 0; i < getInstance().getHeight(); i++) {
                 for (int j = 0; j < getInstance().getDepth(); j++) {
                     JPanel jp_block = new JPanel();
                     BorderLayout layout = new BorderLayout();
                     jp_block.setLayout(layout);
-                    jp_block.add(new ImagePanel(getMesh().getMeshTiles()[i][j].getImage(), 25, 25), BorderLayout.CENTER);
+
+                    jp_block.add(new ImagePanel(getMesh().getMeshTiles()[i][j].getImage(), tileWidth, tileHeight),
+                            BorderLayout.CENTER);
+
                     jp_grid.add(jp_block, (i * getInstance().getDepth()) + j);
                 }
             }
             jp_grid.updateUI();
-        }catch (Exception ignored){
-
+        } catch (Exception ignored) {
         }
     }
 
@@ -147,21 +147,21 @@ public class View extends JFrame {
         this.drawGrid();
     }
 
-    private void onStart(){
+    private void onStart() {
         int vehicle_limit;
-        try{
+        try {
             vehicle_limit = Integer.parseInt(jtf_vehicle_limit.getText());
             btn_stop.setEnabled(true);
             btn_start.setEnabled(false);
             carInserter = new CarInserter(1000, mesh, vehicle_limit);
             carInserter.start();
-        }catch (NumberFormatException nfe){
+        } catch (NumberFormatException nfe) {
             showMessageDialog(this, "Você deve inserir um número!");
         }
     }
 
-    private void onStop(){
-        carInserter.interrupt();
+    private void onStop() {
+        carInserter.stopThread();
         btn_stop.setEnabled(false);
         btn_start.setEnabled(true);
     }

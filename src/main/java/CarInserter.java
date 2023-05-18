@@ -1,19 +1,20 @@
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 import java.util.concurrent.Semaphore;
 
 public class CarInserter extends Thread {
 
     private final static CarType[] carTypes = new CarType[]{
         CarType.FAMILY_CAR,
-//        CarType.SPORTIVE_CAR,
-//        CarType.TRUCK,
-//        CarType.HEAVY_TRUCK
+        CarType.SPORTIVE_CAR,
+        CarType.TRUCK,
+        CarType.HEAVY_TRUCK
     };
     private final Mesh mesh;
     private int delay = 1000;
     private final Semaphore vehicle_limit;
+    private volatile boolean keepAlive = true;
 
     public CarInserter(int delay, Mesh mesh, int vehicle_limit) {
         this.delay = delay;
@@ -41,17 +42,23 @@ public class CarInserter extends Thread {
 //        this.vehicle_limit = this.vehicle_limit.drainPermits(vehicle_limit);
     }
 
+    public void stopThread() {
+        keepAlive = false;
+    }
+
     @Override
     public void run() {
         Random random = new Random();
-        while (true) {
+        while (keepAlive) {
             try {
                 sleep(delay);
+                if (keepAlive & vehicle_limit.availablePermits() > 0) {
+                    Car car = new Car(mesh, carTypes[random.nextInt(carTypes.length)], vehicle_limit);
+                    car.start();
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            Car car = new Car(mesh, carTypes[random.nextInt(carTypes.length)], vehicle_limit);
-            car.start();
         }
     }
 }
