@@ -1,7 +1,10 @@
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 
 /**
@@ -12,10 +15,20 @@ public class View extends JFrame {
     private JPanel jp_grid;
     private JButton btn_load;
     private JButton btn_start;
+    private JButton btn_stop;
+    private JTextField jtf_vehicle_limit;
     private Instance instance;
     private Mesh mesh;
+    private CarInserter carInserter;
 
     public View(){
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException |
+                 IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         jp_contentPane = new JPanel();
         BorderLayout layout = new BorderLayout();
@@ -23,17 +36,23 @@ public class View extends JFrame {
         setContentPane(jp_contentPane);
         setTitle("Carregue um nivel para iniciar");
         setLocation(0, 0);
+        setDefaultLookAndFeelDecorated(true);
         setSize(600, 600);
 
-        loadButtons();
+        loadComponents();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-
     }
 
     public static void main(String[] args) throws Exception {
+
         View view = new View();
+        view.setInstance(new Instance("./assets/instances/malha-1.txt"));
+        view.setTitle("Fase: " + "malha-1");
+        view.setMesh(new Mesh(view.getInstance()));
+        view.loadGrid();
+        view.drawGrid();
         while(true){
             Thread.sleep(50);
             view.drawGrid();
@@ -45,19 +64,27 @@ public class View extends JFrame {
             jp_contentPane.remove(jp_grid);
         } catch (Exception ignore) {
         }
+        setSize(getInstance().getDepth()*25, (getInstance().getHeight()*25) + 75);
         jp_grid = new JPanel(new GridLayout(getInstance().getHeight(), getInstance().getDepth(), 0, 0));
         jp_grid.setBackground(Color.white);
-        jp_grid.setSize(800, 800);
         jp_contentPane.add(BorderLayout.CENTER, jp_grid);
     }
 
-    private void loadButtons() {
-        JPanel jp_buttons = new JPanel();
+    private void loadComponents() {
+        JPanel jp_components = new JPanel();
         btn_load = new JButton("Carregar");
-        jp_buttons.add(btn_load);
+        jp_components.add(btn_load);
         btn_start = new JButton("Iniciar");
-        jp_buttons.add(btn_start);
-        jp_contentPane.add(BorderLayout.SOUTH, jp_buttons);
+        jp_components.add(btn_start);
+        btn_stop = new JButton("Parar");
+        btn_stop.setEnabled(false);
+        jp_components.add(btn_stop);
+        jtf_vehicle_limit = new JTextField(4);
+        jtf_vehicle_limit.setText(String.valueOf(1));
+        jp_components.add(jtf_vehicle_limit);
+        PlainDocument doc = (PlainDocument) jtf_vehicle_limit.getDocument();
+        doc.setDocumentFilter(new IntegerDocumentFilter());
+        jp_contentPane.add(BorderLayout.SOUTH, jp_components);
         loadEvents();
     }
 
@@ -80,6 +107,15 @@ public class View extends JFrame {
                 }
             }
         });
+        btn_stop.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    onStop();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
     public void drawGrid(){
@@ -90,7 +126,7 @@ public class View extends JFrame {
                     JPanel jp_block = new JPanel();
                     BorderLayout layout = new BorderLayout();
                     jp_block.setLayout(layout);
-                    jp_block.add(new ImagePanel(getMesh().getMeshTiles()[i][j].getImage(), 50, 50), BorderLayout.CENTER);
+                    jp_block.add(new ImagePanel(getMesh().getMeshTiles()[i][j].getImage(), 25, 25), BorderLayout.CENTER);
                     jp_grid.add(jp_block, (i * getInstance().getDepth()) + j);
                 }
             }
@@ -112,8 +148,22 @@ public class View extends JFrame {
     }
 
     private void onStart(){
-        CarInserter carInserter = new CarInserter(1000, mesh, 10);
-        carInserter.start();
+        int vehicle_limit;
+        try{
+            vehicle_limit = Integer.parseInt(jtf_vehicle_limit.getText());
+            btn_stop.setEnabled(true);
+            btn_start.setEnabled(false);
+            carInserter = new CarInserter(1000, mesh, vehicle_limit);
+            carInserter.start();
+        }catch (NumberFormatException nfe){
+            showMessageDialog(this, "Você deve inserir um número!");
+        }
+    }
+
+    private void onStop(){
+        carInserter.interrupt();
+        btn_stop.setEnabled(false);
+        btn_start.setEnabled(true);
     }
 
     public Instance getInstance() {
@@ -130,5 +180,42 @@ public class View extends JFrame {
 
     public void setMesh(Mesh mesh) {
         this.mesh = mesh;
+    }
+
+    static class IntegerDocumentFilter extends DocumentFilter {
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string,
+                                 AttributeSet attr) throws BadLocationException {
+            Document doc = fb.getDocument();
+            StringBuilder sb = new StringBuilder();
+            sb.append(doc.getText(0, doc.getLength()));
+            sb.insert(offset, string);
+
+            if (test(sb.toString())) {
+                super.insertString(fb, offset, string, attr);
+            }
+        }
+
+        private boolean test(String text) {
+            try {
+                Integer.parseInt(text);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text,
+                            AttributeSet attrs) throws BadLocationException {
+            Document doc = fb.getDocument();
+            StringBuilder sb = new StringBuilder();
+            sb.append(doc.getText(0, doc.getLength()));
+            sb.replace(offset, offset + length, text);
+
+            if (test(sb.toString())) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
     }
 }

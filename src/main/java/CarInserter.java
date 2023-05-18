@@ -6,10 +6,11 @@ import java.util.concurrent.Semaphore;
 public class CarInserter extends Thread {
 
     private final static CarType[] carTypes = new CarType[]{
-            CarType.FAMILY_CAR,
-//            CarType.SPORTIVE_CAR,
-//            CarType.TRUCK,
-            CarType.HEAVY_TRUCK};
+        CarType.FAMILY_CAR,
+//        CarType.SPORTIVE_CAR,
+//        CarType.TRUCK,
+//        CarType.HEAVY_TRUCK
+    };
     private final Mesh mesh;
     private int delay = 1000;
     private final Semaphore vehicle_limit;
@@ -50,7 +51,6 @@ public class CarInserter extends Thread {
                 throw new RuntimeException(e);
             }
             Car car = new Car(mesh, carTypes[random.nextInt(carTypes.length)], vehicle_limit);
-            System.out.println(vehicle_limit.availablePermits());
             car.start();
         }
     }
