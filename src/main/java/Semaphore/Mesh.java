@@ -1,23 +1,27 @@
+package Semaphore;
+
+import utils.Instance;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Mesh {
-    private final MeshTile[][] meshTiles;
-    private List<MeshTile> entryPoints;
-    private List<MeshTile> exitPoints;
+    private final MeshTileWithSemaphore[][] meshTiles;
+    private List<MeshTileWithSemaphore> entryPoints;
+    private List<MeshTileWithSemaphore> exitPoints;
 
     public Mesh(Instance instance){
         this.meshTiles = buildMeshTiles(instance.getHeight(), instance.getDepth(), instance.getMesh());
     }
 
-    private MeshTile[][] buildMeshTiles(int height, int depth, int[][] points){
-        MeshTile[][] unfinishedMeshTiles = new MeshTile[height][depth];
+    private MeshTileWithSemaphore[][] buildMeshTiles(int height, int depth, int[][] points){
+        MeshTileWithSemaphore[][] unfinishedMeshTiles = new MeshTileWithSemaphore[height][depth];
         entryPoints = new ArrayList<>();
         exitPoints = new ArrayList<>();
         for (int height_index = 0; height_index < height; height_index++) {
             for (int depth_index = 0; depth_index < depth; depth_index++) {
-                MeshTile tile = new MeshTile(height_index, depth_index, points[height_index][depth_index]);
+                MeshTileWithSemaphore tile = new MeshTileWithSemaphore(height_index, depth_index, points[height_index][depth_index]);
                 classifyPoint(tile, height_index, depth_index, height, depth);
                 unfinishedMeshTiles[height_index][depth_index] = tile;
             }
@@ -25,15 +29,15 @@ public class Mesh {
         return unfinishedMeshTiles;
     }
 
-    public List<MeshTile> getEntryPoints() {
+    public List<MeshTileWithSemaphore> getEntryPoints() {
         return entryPoints;
     }
 
-    public List<MeshTile> getExitPoints() {
+    public List<MeshTileWithSemaphore> getExitPoints() {
         return exitPoints;
     }
 
-    private void classifyPoint(MeshTile tile, int height_index, int depth_index, int height, int depth){
+    private void classifyPoint(MeshTileWithSemaphore tile, int height_index, int depth_index, int height, int depth){
         if(tile.getId() != 0){
             // Upper tiles
             if(height_index == 0){
@@ -76,13 +80,13 @@ public class Mesh {
         }
     }
 
-    public MeshTile[][] getMeshTiles() {
+    public MeshTileWithSemaphore[][] getMeshTiles() {
         return meshTiles;
     }
 
     @Override
     public String toString() {
-        return "Mesh{" +
+        return "Semaphore.Mesh{" +
                 "meshTiles=" + Arrays.deepToString(meshTiles) +
                 '}';
     }

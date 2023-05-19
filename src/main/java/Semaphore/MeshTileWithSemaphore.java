@@ -1,18 +1,22 @@
+package Semaphore;
+
+import utils.CarType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class MeshTile {
+public class MeshTileWithSemaphore {
 
     private final int height, depth;
     private final String text;
     private final int id;
     private boolean occupied;
-    private Semaphore semaphore = new Semaphore(1);
+    private final Semaphore semaphore = new Semaphore(1);
     private CarType car = CarType.FAMILY_CAR;
 
-    public MeshTile(int height, int depth, int id) {
+    public MeshTileWithSemaphore(int height, int depth, int id) {
         this.height = height;
         this.depth = depth;
         this.id = id;

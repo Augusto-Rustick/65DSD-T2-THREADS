@@ -1,22 +1,26 @@
+package Semaphore;
+
+import utils.CarType;
+
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
-public class Car extends Thread {
+public class CarWithSemaphore extends Thread {
 
     private final Mesh mesh;
     private final CarType carType;
     private final Semaphore vehicle_limit;
-    private MeshTile currentLane;
-    private MeshTile previousLane;
+    private MeshTileWithSemaphore currentLane;
+    private MeshTileWithSemaphore previousLane;
     private final Random randomNumberGenerator = new Random();
 
-    public Car(Mesh mesh, CarType speed, Semaphore vehicle_limit) {
+    public CarWithSemaphore(Mesh mesh, CarType speed, Semaphore vehicle_limit) {
         this.mesh = mesh;
         this.carType = speed;
         this.vehicle_limit = vehicle_limit;
     }
 
-    private List<int[][]> getCrossings(MeshTile previousLane) {
+    private List<int[][]> getCrossings(MeshTileWithSemaphore previousLane) {
         List<int[][]> crossingOptions;
         List<int[][]> validCrossingOptions;
 
@@ -25,7 +29,7 @@ public class Car extends Thread {
         for (int[][] option : crossingOptions
         ) {
             boolean validOption = false;
-            MeshTile simulatedTrip = previousLane;
+            MeshTileWithSemaphore simulatedTrip = previousLane;
             for (int[] step : option
             ) {
                 validOption = true;
@@ -109,17 +113,17 @@ public class Car extends Thread {
     public void allocateTilesForCrossing(List<int[][]> validCrossingOptions) throws InterruptedException {
 
         int[][] move = validCrossingOptions.get(randomNumberGenerator.nextInt(validCrossingOptions.size()));
-        Stack<MeshTile> path;
+        Stack<MeshTileWithSemaphore> path;
 
         do {
-            MeshTile simulatedLane = previousLane;
+            MeshTileWithSemaphore simulatedLane = previousLane;
             path = new Stack<>();
             for (int[] step : move) {
                 simulatedLane = mesh.getMeshTiles()[simulatedLane.getHeight() + step[0]][simulatedLane.getDepth() + step[1]];
                 if (simulatedLane.getSemaphore().tryAcquire()) {
                     path.push(simulatedLane);
                 } else {
-                    for (MeshTile lane : path
+                    for (MeshTileWithSemaphore lane : path
                     ) {
                         if (lane.getSemaphore().availablePermits() == 0) {
                             lane.getSemaphore().release();
@@ -134,10 +138,10 @@ public class Car extends Thread {
         performCross(move, path);
     }
 
-    private void performCross(int[][] move, Stack<MeshTile> path) throws InterruptedException {
+    private void performCross(int[][] move, Stack<MeshTileWithSemaphore> path) throws InterruptedException {
         previousLane.leaveTile();
         previousLane.getSemaphore().release();
-        MeshTile currentLaneDuringCross = previousLane;
+        MeshTileWithSemaphore currentLaneDuringCross = previousLane;
         for (int i = 0; i < move.length-1; i++) {
             currentLaneDuringCross = mesh.getMeshTiles()[currentLaneDuringCross.getHeight() + move[i][0]][currentLaneDuringCross.getDepth() + move[i][1]];
             currentLaneDuringCross.setCar(carType);

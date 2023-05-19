@@ -1,6 +1,8 @@
-import java.util.List;
+package Semaphore;
+
+import utils.CarType;
+
 import java.util.Random;
-import java.util.Stack;
 import java.util.concurrent.Semaphore;
 
 public class CarInserter extends Thread {
@@ -12,7 +14,7 @@ public class CarInserter extends Thread {
         CarType.HEAVY_TRUCK
     };
     private final Mesh mesh;
-    private int delay = 1000;
+    private int delay;
     private final Semaphore vehicle_limit;
     private volatile boolean keepAlive = true;
 
@@ -22,25 +24,6 @@ public class CarInserter extends Thread {
         this.vehicle_limit = new Semaphore(vehicle_limit);
     }
 
-    public CarInserter(Mesh mesh) {
-        this.delay = 1000;
-        this.mesh = mesh;
-        this.vehicle_limit = new Semaphore(10);
-    }
-
-    public CarInserter(Mesh mesh, int vehicle_limits) {
-        this.delay = 1000;
-        this.mesh = mesh;
-        this.vehicle_limit = new Semaphore(vehicle_limits);
-    }
-
-    public void setDelay(int delay) {
-        this.delay = delay;
-    }
-
-    public void setVehicle_limit(int vehicle_limit) {
-//        this.vehicle_limit = this.vehicle_limit.drainPermits(vehicle_limit);
-    }
 
     public void stopThread() {
         keepAlive = false;
@@ -53,7 +36,7 @@ public class CarInserter extends Thread {
             try {
                 sleep(delay);
                 if (keepAlive & vehicle_limit.availablePermits() > 0) {
-                    Car car = new Car(mesh, carTypes[random.nextInt(carTypes.length)], vehicle_limit);
+                    CarWithSemaphore car = new CarWithSemaphore(mesh, carTypes[random.nextInt(carTypes.length)], vehicle_limit);
                     car.start();
                 }
             } catch (InterruptedException e) {

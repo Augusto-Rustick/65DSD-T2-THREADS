@@ -1,3 +1,8 @@
+package Semaphore;
+
+import utils.ImagePanel;
+import utils.Instance;
+
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -5,7 +10,7 @@ import java.awt.event.*;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
-public class View extends JFrame {
+public class SemaphoreTrafficControl extends JFrame {
     private final JPanel jp_contentPane;
     private JPanel jp_grid;
     private JButton btn_load;
@@ -14,11 +19,12 @@ public class View extends JFrame {
     private JButton btn_show_usage;
     private boolean show_usage = false;
     private JTextField jtf_vehicle_limit;
+    private JTextField jtf_vehicle_insert_delay;
     private Instance instance;
     private Mesh mesh;
     private CarInserter carInserter;
 
-    public View() {
+    public SemaphoreTrafficControl() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException |
@@ -54,7 +60,7 @@ public class View extends JFrame {
     }
 
     public static void main(String[] args) throws Exception {
-        View view = new View();
+        SemaphoreTrafficControl view = new SemaphoreTrafficControl();
         view.setInstance(new Instance("./assets/instances/malha-1.txt"));
         view.setTitle("Fase: " + "malha-1");
         view.setMesh(new Mesh(view.getInstance()));
@@ -88,9 +94,16 @@ public class View extends JFrame {
         btn_show_usage = new JButton("Mostrar Uso");
         jp_components.add(btn_show_usage);
         jtf_vehicle_limit = new JTextField(4);
-        jtf_vehicle_limit.setText(String.valueOf(1));
+        jtf_vehicle_limit.setText(String.valueOf(10));
+        jp_components.add(new Label("Veículos"));
         jp_components.add(jtf_vehicle_limit);
         PlainDocument doc = (PlainDocument) jtf_vehicle_limit.getDocument();
+        doc.setDocumentFilter(new IntegerDocumentFilter());
+        jtf_vehicle_insert_delay = new JTextField(4);
+        jtf_vehicle_insert_delay.setText(String.valueOf(1000));
+        jp_components.add(new Label("Intervalo"));
+        jp_components.add(jtf_vehicle_insert_delay);
+        doc = (PlainDocument) jtf_vehicle_insert_delay.getDocument();
         doc.setDocumentFilter(new IntegerDocumentFilter());
         jp_contentPane.add(BorderLayout.SOUTH, jp_components);
         loadEvents();
@@ -186,7 +199,7 @@ public class View extends JFrame {
             vehicle_limit = Integer.parseInt(jtf_vehicle_limit.getText());
             btn_stop.setEnabled(true);
             btn_start.setEnabled(false);
-            carInserter = new CarInserter(1000, mesh, vehicle_limit);
+            carInserter = new CarInserter(Integer.parseInt(jtf_vehicle_insert_delay.getText()), mesh, vehicle_limit);
             carInserter.start();
         } catch (NumberFormatException nfe) {
             showMessageDialog(this, "Você deve inserir um número!");

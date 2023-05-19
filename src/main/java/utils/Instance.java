@@ -1,3 +1,5 @@
+package utils;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,7 +32,7 @@ public class Instance {
 
     @Override
     public String toString() {
-        return "Instance{" +
+        return "utils.Instance{" +
                 "height=" + getHeight() +
                 ", depth=" + getDepth() +
                 ", mesh=" + Arrays.deepToString(mesh) +
