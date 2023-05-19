@@ -2,7 +2,6 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -12,6 +11,8 @@ public class View extends JFrame {
     private JButton btn_load;
     private JButton btn_start;
     private JButton btn_stop;
+    private JButton btn_show_usage;
+    private boolean show_usage = false;
     private JTextField jtf_vehicle_limit;
     private Instance instance;
     private Mesh mesh;
@@ -38,6 +39,18 @@ public class View extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice device = env.getDefaultScreenDevice();
+        GraphicsConfiguration config = device.getDefaultConfiguration();
+        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(config);
+
+        Rectangle bounds = config.getBounds();
+        bounds.x += screenInsets.left;
+        bounds.y += screenInsets.top;
+        bounds.width -= (screenInsets.left + screenInsets.right);
+        bounds.height -= (screenInsets.top + screenInsets.bottom);
+
+        setBounds(bounds);
     }
 
     public static void main(String[] args) throws Exception {
@@ -53,7 +66,7 @@ public class View extends JFrame {
         }
     }
 
-    private void loadGrid() throws IOException {
+    private void loadGrid() {
         try {
             jp_contentPane.remove(jp_grid);
         } catch (Exception ignore) {
@@ -72,6 +85,8 @@ public class View extends JFrame {
         btn_stop = new JButton("Parar");
         btn_stop.setEnabled(false);
         jp_components.add(btn_stop);
+        btn_show_usage = new JButton("Mostrar Uso");
+        jp_components.add(btn_show_usage);
         jtf_vehicle_limit = new JTextField(4);
         jtf_vehicle_limit.setText(String.valueOf(1));
         jp_components.add(jtf_vehicle_limit);
@@ -109,6 +124,19 @@ public class View extends JFrame {
                 }
             }
         });
+        btn_show_usage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (show_usage){
+                    btn_show_usage.setText("Mostrar Uso");
+                    show_usage = false;
+                }else{
+                    btn_show_usage.setText("Esconder Uso");
+                    show_usage = true;
+                }
+
+            }
+        });
     }
 
     public void drawGrid() {
@@ -125,7 +153,11 @@ public class View extends JFrame {
                     BorderLayout layout = new BorderLayout();
                     jp_block.setLayout(layout);
 
-                    jp_block.add(new ImagePanel(getMesh().getMeshTiles()[i][j].getImage(), tileWidth, tileHeight),
+                    String[] image = getMesh().getMeshTiles()[i][j].getImage();
+                    if(!show_usage){
+                        image[image.length-1] = "assets/free.png";
+                    }
+                    jp_block.add(new ImagePanel(image, tileWidth, tileHeight),
                             BorderLayout.CENTER);
 
                     jp_grid.add(jp_block, (i * getInstance().getDepth()) + j);
@@ -144,7 +176,8 @@ public class View extends JFrame {
         setInstance(new Instance(path));
         setMesh(new Mesh(getInstance()));
         this.loadGrid();
-        this.drawGrid();
+        revalidate();
+        repaint();
     }
 
     private void onStart() {

@@ -44,8 +44,7 @@ public class ImagePanel extends JPanel{
                 }
                 i++;
             }
-        } catch (IOException e) {
-            System.out.println("javax.imageio.IIOException: Can't read input at file "+i+"!");
+        } catch (IOException ignored) {
         }
     }
 
