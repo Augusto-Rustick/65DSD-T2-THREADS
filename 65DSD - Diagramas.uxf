@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>707</x>
+      <y>133</y>
+      <w>168</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>/MeshTile/
+--
+- height: int
+- depth: int 
+- text: String 
+- id: int 
+- occupied: boolean
+--
++ isOccupied(): boolean
++ leaveTile(): void
++ enterTile(): void
+||getters e setters||</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>707</x>
+      <y>287</y>
+      <w>168</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>/Mesh/
+--
+- meshTiles: MeshTile[][]
+- entryPoints: List&lt;MeshTile&gt;
+- exitPoints: List&lt;MeshTile&gt;
+--
+||getters ||</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>945</x>
+      <y>133</y>
+      <w>175</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>SemaphoreMeshTile
+--
+- permits: int
+- semaphore: Semaphore
+--
+||getters ||
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>945</x>
+      <y>287</y>
+      <w>168</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>SemaphoreMesh         
+--
+
+--
++ createMeshTile(): MeshTile</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>868</x>
+      <y>315</y>
+      <w>91</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>868</x>
+      <y>189</y>
+      <w>91</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>532</x>
+      <y>133</y>
+      <w>119</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Interface&gt;&gt;
+Allocatable
+--
+
+--
+allocate(): void 
+deallocate(): void
+canAllocate(): boolean
+tryAllocate(): boolean</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>644</x>
+      <y>182</y>
+      <w>77</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>532</x>
+      <y>406</y>
+      <w>119</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Interface&gt;&gt;
+Allocatable
+--
+
+--
+allocate(): void 
+deallocate(): void
+canAllocate(): boolean
+tryAllocate(): boolean</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>644</x>
+      <y>455</y>
+      <w>77</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>707</x>
+      <y>406</y>
+      <w>168</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>/MeshTile/
+--
+- height: int
+- depth: int 
+- text: String 
+- id: int 
+- occupied: boolean
+--
++ isOccupied(): boolean
++ leaveTile(): void
++ enterTile(): void
+||getters e setters||</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>707</x>
+      <y>560</y>
+      <w>168</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>/Mesh/
+--
+- meshTiles: MeshTile[][]
+- entryPoints: List&lt;MeshTile&gt;
+- exitPoints: List&lt;MeshTile&gt;
+--
+||getters ||</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>868</x>
+      <y>588</y>
+      <w>91</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>945</x>
+      <y>560</y>
+      <w>168</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>MonitorMesh    
+--
+
+--
++ createMeshTile(): MeshTile</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>868</x>
+      <y>462</y>
+      <w>91</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>945</x>
+      <y>406</y>
+      <w>175</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>MonitorMeshTile
+--
+- lock: ReadWriteLock
+--
++ getLock(): ReadWriteLock
+||getters ||
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
